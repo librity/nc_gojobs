@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   scrapper.go                                        :+:      :+:    :+:   */
+/*   scrape.go                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:47:35 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 18:53:51 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,6 @@ type scrapeControl struct {
 var control = scrapeControl{}
 var cont = &control
 
-func initControl(country, tech string, pages int) {
-	cont.country = country
-	cont.tech = tech
-	cont.pages = resolvePages(pages)
-}
-
 // Scrape Indeed.com listings by term, country and number of pages
 func Scrape(country, tech string, pages int) {
 	initControl(country, tech, pages)
@@ -54,4 +48,10 @@ func Scrape(country, tech string, pages int) {
 	saveToCSV()
 
 	fmt.Println("Successfully scrapped", len(cont.jobs), "jobs")
+}
+
+func initControl(country, tech string, pages int) {
+	cont.country = country
+	cont.tech = tech
+	cont.pages = resolvePages(pages)
 }
