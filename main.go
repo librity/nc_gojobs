@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 02:42:15 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 03:58:48 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,27 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-// https://it.indeed.com/offerte-lavoro?q=ruby&limit=50
-// https://br.indeed.com/empregos?q=ruby&limit=50
-// https://uk.indeed.com/jobs?q=ruby&limit=50
-
-// https://CODE.indeed.com/jobs?q=LANGUAGE&limit=50
-
-const baseUrl = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
-const viewJobUrl = "https://it.indeed.com/viewjob?jk="
+const country = "br"
+const tech = "elixir"
 
 const scrapesDir = "scrapes"
+
+var jobsUrls = map[string]string{
+	"it": "https://it.indeed.com/offerte-lavoro?limit=50&q=",
+	"br": "https://br.indeed.com/empregos?limit=50&q=",
+	"uk": "https://uk.indeed.com/jobs?limit=50&q=",
+}
+
+var viewJobUrls = map[string]string{
+	"it": "https://it.indeed.com/viewjob?jk=",
+	"br": "https://br.indeed.com/viewjob?jk=",
+	"uk": "https://uk.indeed.com/viewjob?jk=",
+}
 
 type extractedJob struct {
 	id       string
@@ -55,25 +62,33 @@ func main() {
 }
 
 func saveJobsAsCSV(jobs []extractedJob) {
-	w := initCSVWriter()
+	cCSV := make(chan []string)
 
-	writeHeader(w)
 	for _, job := range jobs {
-		writeJob(w, job)
+		go jobToRow(cCSV, job)
+	}
+
+	w := initCSVWriter()
+	writeHeader(w)
+
+	for i := 0; i < len(jobs); i++ {
+		jobRow := <-cCSV
+		wErr := w.Write(jobRow)
+		checkErr(wErr)
 	}
 }
 
-func writeJob(w *csv.Writer, job extractedJob) {
+func jobToRow(cCSV chan<- []string, job extractedJob) {
 	jobRow := []string{
 		job.id,
 		job.link,
 		job.title,
 		job.location,
 		job.salary,
-		job.summary}
+		job.summary,
+	}
 
-	wErr := w.Write(jobRow)
-	checkErr(wErr)
+	cCSV <- jobRow
 }
 
 func writeHeader(w *csv.Writer) {
@@ -93,11 +108,26 @@ func initCSVWriter() *csv.Writer {
 
 func initFile() *os.File {
 	os.MkdirAll(scrapesDir, os.ModePerm)
-	path := filepath.Join(scrapesDir, "it_jobs.csv")
-	file, err := os.Create(path)
+	filePath := makeFilePath()
+	file, err := os.Create(filePath)
 	checkErr(err)
 
 	return file
+}
+
+func makeFilePath() string {
+	nameFragments := []string{makeTimestamp(), country, tech, "jobs.csv"}
+	fileName := strings.Join(nameFragments, "_")
+
+	return filepath.Join(scrapesDir, fileName)
+}
+
+func makeTimestamp() string {
+	now := time.Now()
+	timestamp := now.Format(time.Stamp)
+	timestamp = strings.ReplaceAll(timestamp, " ", "_")
+
+	return timestamp
 }
 
 func extractJobs(totalPages int) []extractedJob {
@@ -136,7 +166,7 @@ func extractBatch(cJobs chan<- []extractedJob, page int) {
 
 func extractJob(cJob chan<- extractedJob, card *goquery.Selection) {
 	id, _ := card.Attr("data-jk")
-	link := viewJobUrl + id
+	link := viewJobUrls[country] + id
 	title := cleanField(
 		card.Find(".title>a").Text())
 	location := cleanField(
@@ -156,11 +186,18 @@ func extractJob(cJob chan<- extractedJob, card *goquery.Selection) {
 	}
 }
 
-func getBody(page int) *goquery.Document {
-	pageUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
+func buildJobsUrl(page int) string {
+	baseUrl := jobsUrls[country] + tech
+	jobsUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
 
-	fmt.Println("Requesting:", pageUrl)
-	res, err := http.Get(pageUrl)
+	return jobsUrl
+}
+
+func getBody(page int) *goquery.Document {
+	jobsUrl := buildJobsUrl(page)
+
+	fmt.Println("Requesting:", jobsUrl)
+	res, err := http.Get(jobsUrl)
 	checkErr(err)
 	checkStatus(res)
 
@@ -173,7 +210,7 @@ func getBody(page int) *goquery.Document {
 
 func getTotalPages() int {
 	pages := 0
-	res, err := http.Get(baseUrl)
+	res, err := http.Get(buildJobsUrl(0))
 
 	checkErr(err)
 	checkStatus(res)

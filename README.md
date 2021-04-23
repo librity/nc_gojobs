@@ -18,3 +18,5 @@ A concurrent web scrapper in GO.
 ## Resources
 
 - https://stackoverflow.com/questions/28448543/how-to-create-nested-directories-using-mkdir-in-golang#28448702
+- https://zetcode.com/golang/current-time/
+- https://www.tutorialspoint.com/go/go_multi_dimensional_arrays.htm
