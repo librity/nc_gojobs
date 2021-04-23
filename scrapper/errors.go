@@ -1,23 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.go                                            :+:      :+:    :+:   */
+/*   errors.go                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/23 04:20:57 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:30:32 by lpaulo-m         ###   ########.fr       */
+/*   Created: 2021/04/23 18:16:54 by lpaulo-m          #+#    #+#             */
+/*   Updated: 2021/04/23 18:21:33 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-package main
+package scrapper
 
-import "github.com/librity/nc_gojobs/scrapper"
+import (
+	"log"
+	"net/http"
+)
 
-var country = "it"
-var tech = "ruby"
-var pages = -1
+func checkErr(err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
 
-func main() {
-	scrapper.Scrape(country, tech, pages)
+func checkStatus(res *http.Response) {
+	if res.StatusCode != 200 {
+		log.Fatalln("Request failed with status", res.StatusCode)
+	}
 }
