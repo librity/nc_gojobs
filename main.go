@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 00:09:02 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 00:30:14 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -30,22 +31,27 @@ import (
 var baseUrl string = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
 
 type extractedJob struct {
-	id          string
-	location    string
-	title       string
-	salary      string
-	description string
+	id       string
+	title    string
+	location string
+	salary   string
+	summary  string
 }
 
 func main() {
+	var jobs []extractedJob
 	totalPages := getTotalPages()
 
 	for i := 0; i < totalPages; i++ {
-		getPage(i)
+		extractedJobs := getPage(i)
+		jobs = append(jobs, extractedJobs...)
 	}
+
+	fmt.Println(jobs)
 }
 
-func getPage(page int) {
+func getPage(page int) []extractedJob {
+	var jobs []extractedJob
 	pageUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
 
 	fmt.Println("Requesting:", pageUrl)
@@ -59,12 +65,31 @@ func getPage(page int) {
 
 	cards := doc.Find(".jobsearch-SerpJobCard")
 	cards.Each(func(i int, card *goquery.Selection) {
-		id, _ := card.Attr("data-jk")
-		title := card.Find(".title>a").Text()
-		location := card.Find(".sjcl").Text()
-
-		fmt.Println(id, title, location)
+		job := ectractJob(card)
+		jobs = append(jobs, job)
 	})
+
+	return jobs
+}
+
+func ectractJob(card *goquery.Selection) extractedJob {
+	id, _ := card.Attr("data-jk")
+	title := cleanField(
+		card.Find(".title>a").Text())
+	location := cleanField(
+		card.Find(".sjcl").Text())
+	salary := cleanField(
+		card.Find(".salaryText").Text())
+	summary := cleanField(
+		card.Find(".summary").Text())
+
+	return extractedJob{
+		id:       id,
+		title:    title,
+		location: location,
+		salary:   salary,
+		summary:  summary,
+	}
 }
 
 func getTotalPages() int {
@@ -97,4 +122,10 @@ func checkStatus(res *http.Response) {
 	}
 }
 
-// func cleanS
+func cleanField(field string) string {
+	trimmed := strings.TrimSpace(field)
+	cleaned := strings.Fields(trimmed)
+	joined := strings.Join(cleaned, " ")
+
+	return joined
+}
