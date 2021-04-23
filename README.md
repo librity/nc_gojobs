@@ -15,6 +15,7 @@ A concurrent web scrapper in GO.
 - https://pkg.go.dev/github.com/PuerkitoBio/goquery?utm_source=godoc
 - https://golang.org/pkg/strings/#TrimSpace
 - https://pkg.go.dev/os?utm_source=gopls#Mkdir
+- https://echo.labstack.com/guide/
 
 ## Resources
 

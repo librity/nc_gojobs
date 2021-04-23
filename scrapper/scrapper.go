@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:27:34 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 18:47:35 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,6 @@ var viewJobUrls = map[string]string{
 	"uk": "https://uk.indeed.com/viewjob?jk=",
 }
 
-type extractedJob struct {
-	id       string
-	link     string
-	title    string
-	location string
-	salary   string
-	summary  string
-}
-
 type scrapeControl struct {
 	country string
 	tech    string
@@ -55,6 +46,7 @@ func initControl(country, tech string, pages int) {
 	cont.pages = resolvePages(pages)
 }
 
+// Scrape Indeed.com listings by term, country and number of pages
 func Scrape(country, tech string, pages int) {
 	initControl(country, tech, pages)
 
