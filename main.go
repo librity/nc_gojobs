@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/22 23:51:53 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 00:09:02 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -28,12 +29,45 @@ import (
 
 var baseUrl string = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
 
-func main() {
-	totalPages := getPages()
-	fmt.Println(totalPages)
+type extractedJob struct {
+	id          string
+	location    string
+	title       string
+	salary      string
+	description string
 }
 
-func getPages() int {
+func main() {
+	totalPages := getTotalPages()
+
+	for i := 0; i < totalPages; i++ {
+		getPage(i)
+	}
+}
+
+func getPage(page int) {
+	pageUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
+
+	fmt.Println("Requesting:", pageUrl)
+	res, err := http.Get(pageUrl)
+	checkErr(err)
+	checkStatus(res)
+
+	defer res.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	checkErr(err)
+
+	cards := doc.Find(".jobsearch-SerpJobCard")
+	cards.Each(func(i int, card *goquery.Selection) {
+		id, _ := card.Attr("data-jk")
+		title := card.Find(".title>a").Text()
+		location := card.Find(".sjcl").Text()
+
+		fmt.Println(id, title, location)
+	})
+}
+
+func getTotalPages() int {
 	pages := 0
 	res, err := http.Get(baseUrl)
 
@@ -62,3 +96,5 @@ func checkStatus(res *http.Response) {
 		log.Fatalln("Request failed with status", res.StatusCode)
 	}
 }
+
+// func cleanS
