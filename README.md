@@ -13,5 +13,8 @@ A concurrent web scrapper in GO.
 - https://golang.org/pkg/
 - https://pkg.go.dev/github.com/PuerkitoBio/goquery?utm_source=godoc
 - https://golang.org/pkg/strings/#TrimSpace
+- https://pkg.go.dev/os?utm_source=gopls#Mkdir
 
 ## Resources
+
+- https://stackoverflow.com/questions/28448543/how-to-create-nested-directories-using-mkdir-in-golang#28448702

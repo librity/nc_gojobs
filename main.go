@@ -6,16 +6,19 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 00:30:14 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 01:14:10 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -30,8 +33,11 @@ import (
 
 var baseUrl string = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
 
+const scrapesDir = "scrapes"
+
 type extractedJob struct {
 	id       string
+	link     string
 	title    string
 	location string
 	salary   string
@@ -39,15 +45,91 @@ type extractedJob struct {
 }
 
 func main() {
-	var jobs []extractedJob
 	totalPages := getTotalPages()
+	jobs := ectractJobs(totalPages)
+
+	saveJobsAsCSV(jobs)
+
+	fmt.Println("Successfully scrapped", len(jobs), "jobs")
+}
+
+func saveJobsAsCSV(jobs []extractedJob) {
+	w := initCSVWriter()
+
+	writeHeader(w)
+	for _, job := range jobs {
+		writeJob(w, job)
+	}
+}
+
+func writeJob(w *csv.Writer, job extractedJob) {
+	jobRow := []string{
+		job.id,
+		job.link,
+		job.title,
+		job.location,
+		job.salary,
+		job.summary}
+
+	wErr := w.Write(jobRow)
+	checkErr(wErr)
+}
+
+func writeHeader(w *csv.Writer) {
+	headers := []string{"id", "link", "title", "location", "salary", "summary"}
+	wErr := w.Write(headers)
+	checkErr(wErr)
+}
+
+func initCSVWriter() *csv.Writer {
+	file := initFile()
+
+	w := csv.NewWriter(file)
+	defer w.Flush()
+
+	return w
+}
+
+func initFile() *os.File {
+	os.MkdirAll(scrapesDir, os.ModePerm)
+	path := filepath.Join(scrapesDir, "it_jobs.csv")
+	file, err := os.Create(path)
+	checkErr(err)
+
+	return file
+}
+
+func ectractJobs(totalPages int) []extractedJob {
+	var jobs []extractedJob
 
 	for i := 0; i < totalPages; i++ {
 		extractedJobs := getPage(i)
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	fmt.Println(jobs)
+	return jobs
+}
+
+func ectractJob(card *goquery.Selection) extractedJob {
+	id, _ := card.Attr("data-jk")
+	link := "https://it.indeed.com/viewjob?jk=" + id
+	title := cleanField(
+		card.Find(".title>a").Text())
+	location := cleanField(
+		card.Find(".sjcl").Text())
+	salary := cleanField(
+		card.Find(".salaryText").Text())
+	summary := cleanField(
+		card.Find(".summary").Text())
+
+	return extractedJob{
+		id:       id,
+		link:     link,
+		title:    title,
+		location: location,
+		salary:   salary,
+		summary:  summary,
+	}
 }
 
 func getPage(page int) []extractedJob {
@@ -70,26 +152,6 @@ func getPage(page int) []extractedJob {
 	})
 
 	return jobs
-}
-
-func ectractJob(card *goquery.Selection) extractedJob {
-	id, _ := card.Attr("data-jk")
-	title := cleanField(
-		card.Find(".title>a").Text())
-	location := cleanField(
-		card.Find(".sjcl").Text())
-	salary := cleanField(
-		card.Find(".salaryText").Text())
-	summary := cleanField(
-		card.Find(".summary").Text())
-
-	return extractedJob{
-		id:       id,
-		title:    title,
-		location: location,
-		salary:   salary,
-		summary:  summary,
-	}
 }
 
 func getTotalPages() int {
