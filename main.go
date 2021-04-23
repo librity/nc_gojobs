@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 01:14:10 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 02:42:15 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ import (
 
 // https://CODE.indeed.com/jobs?q=LANGUAGE&limit=50
 
-var baseUrl string = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
+const baseUrl = "https://it.indeed.com/offerte-lavoro?q=ruby&limit=50"
+const viewJobUrl = "https://it.indeed.com/viewjob?jk="
 
 const scrapesDir = "scrapes"
 
@@ -46,7 +47,7 @@ type extractedJob struct {
 
 func main() {
 	totalPages := getTotalPages()
-	jobs := ectractJobs(totalPages)
+	jobs := extractJobs(totalPages)
 
 	saveJobsAsCSV(jobs)
 
@@ -99,20 +100,43 @@ func initFile() *os.File {
 	return file
 }
 
-func ectractJobs(totalPages int) []extractedJob {
+func extractJobs(totalPages int) []extractedJob {
 	var jobs []extractedJob
+	cJobs := make(chan []extractedJob)
 
 	for i := 0; i < totalPages; i++ {
-		extractedJobs := getPage(i)
-		jobs = append(jobs, extractedJobs...)
+		go extractBatch(cJobs, i)
+	}
+
+	for i := 0; i < totalPages; i++ {
+		jobsBatch := <-cJobs
+		jobs = append(jobs, jobsBatch...)
 	}
 
 	return jobs
 }
 
-func ectractJob(card *goquery.Selection) extractedJob {
+func extractBatch(cJobs chan<- []extractedJob, page int) {
+	var jobsBatch []extractedJob
+	cJob := make(chan extractedJob)
+	body := getBody(page)
+
+	cards := body.Find(".jobsearch-SerpJobCard")
+	cards.Each(func(i int, card *goquery.Selection) {
+		go extractJob(cJob, card)
+	})
+
+	for i := 0; i < cards.Length(); i++ {
+		job := <-cJob
+		jobsBatch = append(jobsBatch, job)
+	}
+
+	cJobs <- jobsBatch
+}
+
+func extractJob(cJob chan<- extractedJob, card *goquery.Selection) {
 	id, _ := card.Attr("data-jk")
-	link := "https://it.indeed.com/viewjob?jk=" + id
+	link := viewJobUrl + id
 	title := cleanField(
 		card.Find(".title>a").Text())
 	location := cleanField(
@@ -122,7 +146,7 @@ func ectractJob(card *goquery.Selection) extractedJob {
 	summary := cleanField(
 		card.Find(".summary").Text())
 
-	return extractedJob{
+	cJob <- extractedJob{
 		id:       id,
 		link:     link,
 		title:    title,
@@ -132,8 +156,7 @@ func ectractJob(card *goquery.Selection) extractedJob {
 	}
 }
 
-func getPage(page int) []extractedJob {
-	var jobs []extractedJob
+func getBody(page int) *goquery.Document {
 	pageUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
 
 	fmt.Println("Requesting:", pageUrl)
@@ -142,16 +165,10 @@ func getPage(page int) []extractedJob {
 	checkStatus(res)
 
 	defer res.Body.Close()
-	doc, err := goquery.NewDocumentFromReader(res.Body)
+	body, err := goquery.NewDocumentFromReader(res.Body)
 	checkErr(err)
 
-	cards := doc.Find(".jobsearch-SerpJobCard")
-	cards.Each(func(i int, card *goquery.Selection) {
-		job := ectractJob(card)
-		jobs = append(jobs, job)
-	})
-
-	return jobs
+	return body
 }
 
 func getTotalPages() int {
