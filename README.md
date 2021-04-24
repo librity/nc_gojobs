@@ -1,5 +1,9 @@
 # Nomad Coders - GO for beginners
 
+<p align="center">
+    <img src=".github/home.png" />
+</p>
+
 ## Table of Contents
 
 - [About](#about)
@@ -18,37 +22,25 @@ and saves them to downloadable `.csv` files.
 
 ## Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-What things you need to install the software and how to install them.
-
-```
-Give examples
-```
+You need to hace `GO` installed in your computer.
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running.
+Clone the repo, start the server and open http://localhost:2000 in your browser
 
-Say what the step will be
-
+```bash
+$ git clone https://github.com/librity/nc_gojobs
+$ cd nc_gojobs
+$ go run main.go
 ```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo.
 
 ## Usage <a name = "usage"></a>
 
-- http://localhost:2000
+Choose a country and the tech you wanna work with, then hit submit.
+The server will scrape all Indeed.com listings matching your params
+and send you a `.csv` with the results.
 
 ## Libs <a name = "libs"></a>
 

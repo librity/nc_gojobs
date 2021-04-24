@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 18:23:51 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:27:31 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 21:45:36 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,6 @@ package scrapper
 import (
 	"encoding/csv"
 	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 func saveToCSV() {
@@ -67,24 +64,8 @@ func initCSVWriter() *csv.Writer {
 
 func initFile() *os.File {
 	os.MkdirAll(scrapesDir, os.ModePerm)
-	filePath := makeFilePath()
-	file, err := os.Create(filePath)
+	file, err := os.Create(cont.filePath)
 	checkErr(err)
 
 	return file
-}
-
-func makeFilePath() string {
-	nameFragments := []string{makeTimestamp(), cont.country, cont.tech, "jobs.csv"}
-	fileName := strings.Join(nameFragments, "_")
-
-	return filepath.Join(scrapesDir, fileName)
-}
-
-func makeTimestamp() string {
-	now := time.Now()
-	timestamp := now.Format(time.Stamp)
-	timestamp = strings.ReplaceAll(timestamp, " ", "_")
-
-	return timestamp
 }

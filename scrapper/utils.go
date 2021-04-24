@@ -6,15 +6,17 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 18:37:08 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 21:21:20 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 22:01:00 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 package scrapper
 
 import (
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Cleans all the unecessary whitespace of a string
@@ -31,4 +33,23 @@ func buildJobsUrl(page int) string {
 	jobsUrl := baseUrl + "&start=" + strconv.Itoa(page*50)
 
 	return jobsUrl
+}
+
+func makeFileName() string {
+	nameFragments := []string{makeTimestamp(), cont.country, cont.tech, "jobs.csv"}
+	fileName := strings.Join(nameFragments, "_")
+
+	return fileName
+}
+
+func makeFilePath(fileName string) string {
+	return filepath.Join(scrapesDir, fileName)
+}
+
+func makeTimestamp() string {
+	now := time.Now()
+	timestamp := now.Format(time.Stamp)
+	timestamp = strings.ReplaceAll(timestamp, " ", "_")
+
+	return timestamp
 }

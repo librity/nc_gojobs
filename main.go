@@ -6,18 +6,21 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 04:20:57 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 21:30:38 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 21:52:09 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 package main
 
 import (
+	"os"
+
 	"github.com/labstack/echo/v4"
 	"github.com/librity/nc_gojobs/scrapper"
 )
 
 const url = "localhost:2000"
+const cleanupScrapes = false
 
 func main() {
 	e := echo.New()
@@ -34,7 +37,10 @@ func handleHome(c echo.Context) error {
 
 func handleScrape(c echo.Context) error {
 	scrape := scrapper.InitScrape(c)
-	scrapper.Scrape(scrape)
+	scrapeResults, fileName := scrapper.Scrape(scrape)
+	if cleanupScrapes {
+		defer os.Remove(scrapeResults)
+	}
 
-	return c.File("pages/home.html")
+	return c.Attachment(scrapeResults, fileName)
 }
