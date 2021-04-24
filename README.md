@@ -39,7 +39,7 @@ $ go run main.go
 ## Usage <a name = "usage"></a>
 
 Choose a country and the tech you wanna work with, then hit submit.
-The server will scrape all Indeed.com listings matching your params
+The server will scrape all Indeed.com listings that match your params
 and send you a `.csv` with the results.
 
 ## Libs <a name = "libs"></a>
