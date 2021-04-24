@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>GO Jobs</title>
+  </head>
+
+  <body>
+    <h1>GO Jobs</h1>
+    <h3>Indeed.com scrapper</h3>
+
+    <form method="POST" action="/scrape">
+      <div>
+        <span>Country</span> <br />
+
+        <input type="radio" id="it" name="country" value="it" />
+        <label for="it">Italy</label><br />
+
+        <input type="radio" id="uk" name="country" value="uk" />
+        <label for="uk">UK</label><br />
+
+        <input type="radio" id="br" name="country" value="br" />
+        <label for="br">Brazil</label>
+      </div>
+      <br />
+
+      <div>
+        <label for="tech">Tech</label>
+        <br />
+        <input type="text" id="tech" name="tech" />
+      </div>
+      <br />
+
+      <div>
+        <label for="pages">Number of pages (optional)</label>
+        <br />
+        <input type="number" id="pages" name="pages" max="20" />
+      </div>
+      <br />
+
+      <div>
+        <input type="submit" value="Submit" />
+      </div>
+    </form>
+  </body>
+</html>

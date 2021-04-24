@@ -48,7 +48,7 @@ End with an example of getting some data out of the system or using it for a lit
 
 ## Usage <a name = "usage"></a>
 
-Add notes about how to use the system.
+- http://localhost:2000
 
 ## Libs <a name = "libs"></a>
 
@@ -71,3 +71,4 @@ Add notes about how to use the system.
 - https://github.com/golang-standards/project-layout
 - https://medium.com/@kdnotes/golang-naming-rules-and-conventions-8efeecd23b68
 - https://stackoverflow.com/questions/18678135/static-method-design
+- https://www.w3schools.com/tags/att_input_type_radio.asp

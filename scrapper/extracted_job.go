@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 18:36:49 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:43:56 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 19:31:33 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,23 +49,23 @@ func makeLink(id string) string {
 func extractTitle(card *goquery.Selection) string {
 	rawField := card.Find(".title>a").Text()
 
-	return cleanField(rawField)
+	return CleanField(rawField)
 }
 
 func extractLocation(card *goquery.Selection) string {
 	rawField := card.Find(".sjcl").Text()
 
-	return cleanField(rawField)
+	return CleanField(rawField)
 }
 
 func extractSalary(card *goquery.Selection) string {
 	rawField := card.Find(".salaryText").Text()
 
-	return cleanField(rawField)
+	return CleanField(rawField)
 }
 
 func extractSummary(card *goquery.Selection) string {
 	rawField := card.Find(".summary").Text()
 
-	return cleanField(rawField)
+	return CleanField(rawField)
 }

@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 18:37:08 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:44:19 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 21:21:20 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ import (
 	"strings"
 )
 
-func cleanField(field string) string {
+// Cleans all the unecessary whitespace of a string
+func CleanField(field string) string {
 	trimmed := strings.TrimSpace(field)
 	cleaned := strings.Fields(trimmed)
 	joined := strings.Join(cleaned, " ")

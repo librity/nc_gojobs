@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 23:24:59 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:53:51 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/04/23 21:23:30 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ var control = scrapeControl{}
 var cont = &control
 
 // Scrape Indeed.com listings by term, country and number of pages
-func Scrape(country, tech string, pages int) {
-	initControl(country, tech, pages)
+func Scrape(params scrapeParams) {
+	initControl(params)
 
 	extractJobs()
 	saveToCSV()
@@ -50,8 +50,8 @@ func Scrape(country, tech string, pages int) {
 	fmt.Println("Successfully scrapped", len(cont.jobs), "jobs")
 }
 
-func initControl(country, tech string, pages int) {
-	cont.country = country
-	cont.tech = tech
-	cont.pages = resolvePages(pages)
+func initControl(params scrapeParams) {
+	cont.country = params.country
+	cont.tech = params.tech
+	cont.pages = resolvePages(params.pages)
 }
