@@ -37,6 +37,12 @@ $ cd nc_gojobs
 $ go run main.go
 ```
 
+Automagically analyze race conditions during compilation:
+
+```bash
+$ go build -race
+```
+
 ## Usage <a name = "usage"></a>
 
 Choose a country and the tech you wanna work with, then hit submit.
