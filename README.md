@@ -25,7 +25,7 @@ and saves them to downloadable `.csv` files.
 
 ### Prerequisites
 
-You need to hace `GO` installed in your computer.
+Install the latest version of `Go` in your machine.
 
 ### Installing
 
