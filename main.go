@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 04:20:57 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 21:52:09 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2021/12/12 00:01:52 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,21 @@ import (
 	"github.com/librity/nc_gojobs/scrapper"
 )
 
-const url = "localhost:2000"
+var port = os.Getenv("PORT")
+
 const cleanupScrapes = false
 
 func main() {
+	if port == "" {
+		port = "2000"
+	}
+
 	e := echo.New()
 
 	e.GET("/", handleHome)
 	e.POST("/scrape", handleScrape)
 
-	e.Logger.Fatal(e.Start(url))
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 func handleHome(c echo.Context) error {
