@@ -6,11 +6,11 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 18:25:44 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 18:32:52 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2022/11/02 23:46:26 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-package scrapper
+package scraper
 
 import (
 	"net/http"

@@ -6,11 +6,11 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 21:18:50 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/04/23 21:26:38 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2022/11/02 23:46:26 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-package scrapper
+package scraper
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ type scrapeParams struct {
 	pages   int
 }
 
-// Initializes the scrapper
+// Initializes the scraper
 func InitScrape(c echo.Context) scrapeParams {
 	params := scrapeParams{}
 	params.country = getCountry(c)

@@ -6,7 +6,7 @@
 /*   By: lpaulo-m <lpaulo-m@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 04:20:57 by lpaulo-m          #+#    #+#             */
-/*   Updated: 2021/12/12 00:01:52 by lpaulo-m         ###   ########.fr       */
+/*   Updated: 2022/11/02 23:46:26 by lpaulo-m         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
-	"github.com/librity/nc_gojobs/scrapper"
+	"github.com/librity/nc_gojobs/scraper"
 )
 
 var port = os.Getenv("PORT")
@@ -41,8 +41,8 @@ func handleHome(c echo.Context) error {
 }
 
 func handleScrape(c echo.Context) error {
-	scrape := scrapper.InitScrape(c)
-	scrapeResults, fileName := scrapper.Scrape(scrape)
+	scrape := scraper.InitScrape(c)
+	scrapeResults, fileName := scraper.Scrape(scrape)
 	if cleanupScrapes {
 		defer os.Remove(scrapeResults)
 	}
